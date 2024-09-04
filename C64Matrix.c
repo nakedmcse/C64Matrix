@@ -5,7 +5,7 @@
 #include<string.h>
 #include "c64.h"
 
-void initScreen() {
+void initScreen(char *picklist) {
     int i;
     char *screen = (char *)BASE_SCREEN_ADDRESS;
     CLRSCR;
@@ -13,7 +13,7 @@ void initScreen() {
     GRAPHICS_OFF;
     memset((char *)BASE_COLOR_ADDRESS, C64_COLOR_GREEN, 1000);
     for(i = 0; i < 40; i++) {
-        memset(screen+i, (rand() % 50) + 32, 1);
+        memset(screen+i, picklist[rand() % strlen(picklist)], 1);
     }
 }
 
@@ -43,13 +43,14 @@ bool pollInput() {
 }
 
 int main(void) {
+    static char *picklist = " 01234567890abcdefghijklmnopqrstuvwxyz#$*.";
     bool isRunning = true, drawAltScr = false;
     int i = 0;
     char *target, *source;
     char newchar;
 
     _randomize();
-    initScreen();
+    initScreen(picklist);
 
     // Main Loop
     while(isRunning) {
@@ -61,7 +62,7 @@ int main(void) {
         }
         // New first row
         for(i = 0; i < 40; i++) {
-            newchar = (rand() % 3) == 0 ? 32 : (rand() % 50) + 32;
+            newchar = (rand() % 10) > 5 ? 32 : picklist[rand() % strlen(picklist)];
             memset(target+i, newchar, 1);
         }
         isRunning = pollInput();
